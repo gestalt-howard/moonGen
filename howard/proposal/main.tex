@@ -129,7 +129,7 @@ A significant task of our classifier will be to construct the graph representati
 \item Defining edge weights on an adjacency matrix
 \end{itemize}
 
-For setting node features, we envision using some form of image encoding (i.e. transforming RGB images of Moonboard holds into 1D vectors) to create feature vectors for hold nodes. Under this paradigm, problem nodes could simply be a weighted or uniform average of corresponding hold vectors. It is also possible to create a bag-of-words inspired embedding of each hold and problem node by assigning each hold a one-hot vector (with the non-zero value corresponding to a predefined hold index) and having hold nodes be represented as a binary vector where respective hold indexes are non-zero. 
+For setting node features, we envision using some form of image encoding (i.e. transforming RGB images of Moonboard holds into 1D vectors) to create feature vectors for hold nodes. Under this paradigm, problem nodes could simply be a weighted or uniform average of corresponding hold vectors. It is also possible to create a bag-of-words inspired embedding of each hold and problem node by assigning each hold a one-hot vector (with the non-zero value corresponding to a predefined hold index) and having hold nodes be represented as a multi-hot vector where respective hold indexes are non-zero. 
 
 As for defining edge weights, we plan on using a modified version of the adjacency relation defined in [4], shown below. The adjacency matrix self-loops are taken directly from the original definition but special attention will need to be placed in defining the distance relation amongst holds and the TFIDF calculation itself.
 
