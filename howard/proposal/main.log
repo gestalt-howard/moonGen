@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  20 JAN 2020 21:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  20 JAN 2020 22:00
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -907,13 +907,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 169.
  ) 
 Here is how much of TeX's memory you used:
- 10031 strings out of 492995
- 152520 string characters out of 6132704
- 279924 words of memory out of 5000000
+ 10042 strings out of 492995
+ 152610 string characters out of 6132704
+ 279932 words of memory out of 5000000
  13322 multiletter control sequences out of 15000+600000
- 37058 words of font info for 107 fonts, out of 8000000 for 9000
+ 37512 words of font info for 114 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 36i,9n,39p,1201b,503s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 36i,9n,39p,1205b,503s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/t
 exlive/2017/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/tex
 live/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texl
@@ -925,7 +925,7 @@ ve/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive
 /texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf-dis
 t/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/ty
 pe1/urw/times/utmri8a.pfb>
-Output written on main.pdf (4 pages, 860602 bytes).
+Output written on main.pdf (4 pages, 860644 bytes).
 PDF statistics:
  106 PDF objects out of 1000 (max. 8388607)
  83 compressed objects within 1 object stream
