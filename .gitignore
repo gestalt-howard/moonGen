@@ -1,2 +1,3 @@
-
-howard/tests_scraping/credentials.txt
+.DS_Store
+.ipynb_checkpoints/
+credentials.txt
