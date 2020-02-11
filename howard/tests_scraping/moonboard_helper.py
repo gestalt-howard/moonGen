@@ -157,6 +157,23 @@ def check_fail_url(browser, url):
 # ----------------------------------------------------------------------------------------------------------------------
 # General utility functions
 # ----------------------------------------------------------------------------------------------------------------------
+def save_pickle(data, file_name):
+    """
+    Saves data as pickle format
+    """
+    with open(file_name, 'wb') as f:
+        pickle.dump(data, f)
+    return None
+
+
+def load_pickle(file_name):
+    """
+    Loads data from pickle format
+    """
+    with open(file_name, 'rb') as f:
+        return pickle.load(f)
+
+
 def remove_duplicates(repeats_data):
     """
     Removes repeats from a list
@@ -518,7 +535,7 @@ def process_all_pages(browser, save_path='', num_tries=20, sleep_val=1, num_page
     # Load problems dict, if it exists
     problems_dict = {}
     if os.path.exists(save_path):
-        problems_dict = pickle.load(open(save_path, 'rb'))
+        problems_dict = load_pickle(save_path)
 
     page_cnt = 0
     found_page = True
@@ -537,7 +554,7 @@ def process_all_pages(browser, save_path='', num_tries=20, sleep_val=1, num_page
 
         # Save intermediate result
         if save_path != '':
-            pickle.dump(problems_dict, open(save_path, 'wb'))
+            save_pickle(problems_dict, save_path)
 
         # Click to next page until pages run out
         page_elem = None
@@ -581,7 +598,7 @@ def scrape_problems(browser, problems_dict, holds_path, failed_dict, failed_path
             print(str(uid) + ' failed')
             failed_dict[uid] = tmp_problem['url']
 
-            pickle.dump(failed_dict, open(failed_path, 'wb'))
+            save_pickle(failed_dict, failed_path)
             continue
         else:
             change = False
@@ -604,6 +621,6 @@ def scrape_problems(browser, problems_dict, holds_path, failed_dict, failed_path
 
             if change:
                 problems_dict[uid] = tmp_problem
-                pickle.dump(problems_dict, open(holds_path, 'wb'))
+                save_pickle(problems_dict, holds_path)
 
     return problems_dict, failed_dict
