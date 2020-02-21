@@ -57,9 +57,9 @@ def holds_to_grid(single_problem_dict):
         holds_list += single_problem_dict.get(tag, [])
 
     for coordinate in holds_list:
-        x, y = coordinate
+        x, y = coordinate  # Original coordinates define origin as lower-left corner
         y = num_rows - y - 1
-        holds_grid[y, x] = 1
+        holds_grid[y, x] = 1  # New coordinates define origin as upper-left corner
 
     return holds_grid
 
