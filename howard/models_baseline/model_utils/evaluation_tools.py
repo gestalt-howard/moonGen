@@ -269,9 +269,6 @@ def plot_confusion_matrix(y_true, y_pred, title, ax, window_size=0):
     - title: (string) Title of correlation plot
     - ax: Matplotlib axis object
     - window_size: (int) Size of sliding window
-
-    Output(s):
-    - Dictionary of correlation statistics
     """
     agg_true, agg_pred = argmax_with_window(y_true, y_pred, window_size=window_size)
 
