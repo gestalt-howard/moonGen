@@ -110,11 +110,11 @@ On the modeling side, we've implemented a baseline logistic regression classifie
 \begin{figure}
 \centering
 \includegraphics[width=.8\linewidth]{confusion_window}
-\caption{Two confusion matrices that present a novel approach to model evaluation of a multi-categroy classifier. The left-hand plot shows a vanilla confusion matrix implementation (Window Size 0) while the right-hand matrix incorporates a sliding-window approach (Window Size 1) to determining false positive / true positive rates amongst the different difficulty classes.}
+\caption{Two confusion matrices that present a novel approach to model evaluation of a multi-category classifier. The left-hand plot shows a vanilla confusion matrix implementation (Window Size 0) while the right-hand matrix incorporates a sliding-window approach (Window Size 1) to determining false positive / true positive rates amongst the different difficulty classes.}
 \end{figure}
 
 \section{Evaluation Strategy}
-To guide our decision-making throughout the remainder of this project, we invested significant effort in creating robust, custom evaluation metrics for monitoring model performance. Since our objective is multi-category classification, our evaluation strategy incorporates many proven classification-compatible metrics (i.e. F1-score, accuracy, recall, precision, AUC) along with confusion matrices and correlation plots. In addition, we extended each of these techniques to incorporate a sliding window over the difficulty classes. This custom addition encodes an intuition that we are willing to accept a \(+/- 1\) margin of error in our difficulty classification (i.e. a V4 problem can be mistaken for a V5 but not a V6, if using a sliding window size of 1). Altogether, these metrics are combined into three distinct visualizations (see Table 1) 
+To guide our decision-making throughout the remainder of this project, we invested significant effort in creating robust, custom evaluation metrics for monitoring model performance. Since our objective is multi-category classification, our evaluation strategy incorporates many proven classification-compatible metrics (i.e. F1-score, accuracy, recall, precision, AUC) along with confusion matrices and correlation plots. In addition, we extended each of these techniques to accomodate a sliding window over the difficulty classes. This custom addition encodes an intuition that we are willing to accept a \(+/- 1\) margin of error in our difficulty classification (i.e. a V4 problem can be mistaken for a V5 but not a V6, if using a sliding window size of 1). Altogether, these metrics are combined into three distinct visualizations (see Table 1) 
 
 \begin{table}[h!]
 	\begin{center}
@@ -133,7 +133,7 @@ To guide our decision-making throughout the remainder of this project, we invest
 {\small\textbf{Code for model evaluation can be found \href{https://github.com/gestalt-howard/moonGen/blob/master/howard/models_baseline/model_utils/evaluation_tools.py}{here}.}}
 
 \section{Remaining Steps}
-We plan on continuing to refine our GCN implementation by evaluating performance under different feature sets and adjacency definitions such that we are able to thoroughly characterize the behavior of our GCN network. Should we have additional time, we would like to explore a generative application [1] capable of producing a new Moonboard problem, given a user-specified difficulty.
+We plan on continuing to refine our GCN implementation by evaluating performance under different feature sets and adjacency definitions such that we are able to thoroughly characterize the behavior of our GCN model. Should we have additional time, we will explore a generative application [1] capable of producing a new Moonboard problem, given a user-specified difficulty.
 
 \section*{References}
 \medskip
