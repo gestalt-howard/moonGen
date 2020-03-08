@@ -4,7 +4,7 @@
 
 import numpy as np
 
-from pytorch.utils.full_process_utils import *
+from scripts.pytorch.utils.full_process_utils import *
 
 
 def gen_labels_idxs(full_processed, nodes_keys):

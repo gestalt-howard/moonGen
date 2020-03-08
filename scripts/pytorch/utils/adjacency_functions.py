@@ -4,7 +4,7 @@
 
 import numpy as np
 
-from pytorch.utils.full_process_utils import *
+from scripts.pytorch.utils.full_process_utils import *
 
 
 def set_diagonal(adj_mat):

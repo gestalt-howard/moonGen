@@ -11,11 +11,11 @@ import pickle
 
 import numpy as np
 
-from pytorch.utils.tfidfHolds import TfidfHolds
-from pytorch.utils.nodeMapping import NodeMapping
-from pytorch.utils.nodeAdjacency import NodeAdjacency
+from scripts.pytorch.utils.tfidfHolds import TfidfHolds
+from scripts.pytorch.utils.nodeMapping import NodeMapping
+from scripts.pytorch.utils.nodeAdjacency import NodeAdjacency
 
-from pytorch.utils.utils import *
+from scripts.pytorch.utils.utils import *
 
 
 class GraphDataProcess:

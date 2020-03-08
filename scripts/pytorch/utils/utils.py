@@ -9,9 +9,9 @@ import pickle
 
 import numpy as np
 
-from pytorch.utils.label_functions import gen_labels_idxs, gen_onehot_labels_idxs
-from pytorch.utils.feature_functions import *
-from pytorch.utils.adjacency_functions import *
+from scripts.pytorch.utils.label_functions import gen_labels_idxs, gen_onehot_labels_idxs
+from scripts.pytorch.utils.feature_functions import *
+from scripts.pytorch.utils.adjacency_functions import *
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -354,7 +354,21 @@ def rev_dict(mapping):
 def set_paths(model_type, ver, data_dir, result_dir):
     """
     Sets some default paths and makes default directories if they don't exist
+
+    Input(s):
+    - model_type (string): Type of neural network (i.e. GCN, Dense)
+    - ver (string): Iteration of specific type of neural network
+    -
     """
+    # Setup data directory
+    if not os.path.exists(data_dir):
+        os.mkdir(data_dir)
+
+    # Setup results directory
+    if not os.path.exists(result_dir):
+        os.mkdir(result_dir)
+
+    # Setup
     data_path = data_dir + model_type + '/'
     if not os.path.exists(data_path):
         os.mkdir(data_path)

@@ -5,11 +5,11 @@ import pickle
 
 import numpy as np
 
-from pytorch.utils.label_functions import *
-from pytorch.utils.feature_functions import *
-from pytorch.utils.adjacency_functions import *
+from scripts.pytorch.utils.label_functions import *
+from scripts.pytorch.utils.feature_functions import *
+from scripts.pytorch.utils.adjacency_functions import *
 
-from pytorch.utils.utils import *
+from scripts.pytorch.utils.utils import *
 
 
 class SubGraphProcess:

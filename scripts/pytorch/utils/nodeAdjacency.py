@@ -7,7 +7,7 @@ import os
 import pdb
 import numpy as np
 
-from pytorch.utils.utils import *
+from scripts.pytorch.utils.utils import *
 
 
 class NodeAdjacency:
