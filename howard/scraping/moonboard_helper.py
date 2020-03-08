@@ -6,6 +6,7 @@ import os
 import copy
 import json
 import time
+import string
 import pickle
 
 from bs4 import BeautifulSoup
@@ -624,3 +625,109 @@ def scrape_problems(browser, problems_dict, holds_path, failed_dict, failed_path
                 save_pickle(problems_dict, holds_path)
 
     return problems_dict, failed_dict
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Schema formatting functions
+# ----------------------------------------------------------------------------------------------------------------------
+def get_pos_map():
+    """
+    Defines a mapping from MoonBoard columns (designated A - K) to numerical values (0 - 10)
+    """
+    letters = string.ascii_uppercase[:11]
+    return {l: i for i, l in enumerate(letters)}
+
+
+def get_grade_map():
+    """
+    Defines a mapping of Fontainebleau grades to integer values
+    """
+    grade_map = {
+        '6A': 0,
+        '6A+': 1,
+        '6B': 2,
+        '6B+': 3,
+        '6C': 4,
+        '6C+': 5,
+        '7A': 6,
+        '7A+': 7,
+        '7B': 8,
+        '7B+': 9,
+        '7C': 10,
+        '7C+': 11,
+        '8A': 12,
+        '8A+': 13,
+        '8B': 14,
+        '8B+': 15,
+        '8C': 16,
+        '8C+': 17
+    }
+    return grade_map
+
+
+def get_moves(problem):
+    """
+    Parses 'moves' attribute in raw mined MoonBoard metadata
+
+    Input(s):
+    - problem (dict): Dictionary of raw mined data
+
+    Output(s):
+    Three (3) list of list of ints
+    """
+    pos_map = get_pos_map()
+
+    # Instantiate indexes
+    start_idxs = []
+    mid_idxs = []
+    end_idxs = []
+
+    if 'moves' in problem:
+        moves = problem['moves']
+        for m in moves:
+            position = m['Description']
+            position = [int(pos_map[position[0]]), int(position[1:])-1]  # Column index, row index
+            if m['IsStart']:
+                start_idxs.append(position)
+            elif m['IsEnd']:
+                end_idxs.append(position)
+            else:
+                mid_idxs.append(position)
+
+    return start_idxs, mid_idxs, end_idxs
+
+
+def process_raw_to_schema_basic(raw_dict):
+    """
+    Processes raw mined MoonBoard metadata into a basic format for neural network processing
+
+    Input(s):
+    - raw_dict (dict): Dictionary sample from [problems_dict_holds.pickle]
+    """
+    # Get move indexes
+    start_idxs, mid_idxs, end_idxs = get_moves(raw_dict)
+
+    # Get grade map
+    grade_map = get_grade_map()
+
+    # Instantiate basic dictionary
+    basic_dict = {
+        'url': raw_dict['url'],
+        'start': start_idxs,
+        'mid': mid_idxs,
+        'end': end_idxs,
+        'grade': grade_map[raw_dict['info'][2]]
+    }
+    return basic_dict
+
+
+def cast_to_basic_schema(raw_data):
+    """
+    Casts raw mined dictionary into a basic schema format, wrapper for process_raw_to_schema_basic()
+    """
+    formatted_data = dict()
+
+    for problem_name, raw_problem in raw_data.items():
+        formatted_data[problem_name] = process_raw_to_schema_basic(raw_problem)
+
+    return formatted_data
