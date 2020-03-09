@@ -10,10 +10,10 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 
 from scipy.stats import pearsonr
-from sklearn.metrics import f1_score, accuracy_score, recall_score, precision_score, roc_curve, auc, confusion_matrix
+from sklearn.metrics import f1_score, accuracy_score, recall_score, precision_score, roc_auc_score, confusion_matrix
 
-from model_utils.utils import path_exists
-from model_utils.utils import save_pickle, load_pickle
+from scripts.evaluation.eval_utils import path_exists
+from scripts.evaluation.eval_utils import save_pickle, load_pickle
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -67,7 +67,7 @@ def argmax_with_window(y_true, y_pred, window_size=0):
     - True labels shape [m] and corrected predicted labels shape [m]
     """
     # Get most-likely classes
-    y_true_cls = np.argmax(y_true, axis=1).reshape(-1) + 4  # Add 3 to adjust to V-scale difficulties
+    y_true_cls = np.argmax(y_true, axis=1).reshape(-1) + 4  # Add 4 to adjust to V-scale difficulties
     y_pred_cls = np.argmax(y_pred, axis=1).reshape(-1) + 4
 
     y_pred_template = np.empty_like(y_pred_cls)
@@ -146,9 +146,10 @@ def plot_label_correlation(y_true, y_pred, title, ax, window_size=0):
 # ----------------------------------------------------------------------------------------------------------------------
 # FARPA
 # ----------------------------------------------------------------------------------------------------------------------
-def get_farpa_scores(y_true, y_pred, window_size=0):
+def get_farp_scores(y_true, y_pred, window_size=0):
     """
-    Generates F1 score, accuracy, recall, precision, and AUC factoring in sliding windows over correct labels
+    Generates F1 score, accuracy, recall, and precision factoring in sliding windows over correct labels
+    Also calculates AUC
 
     Input(s):
     - y_true: (numpy array) True difficulty label shape [m x num_classes], one-hot vector
@@ -174,10 +175,9 @@ def get_farpa_scores(y_true, y_pred, window_size=0):
         a_scores = []
         r_scores = []
         p_scores = []
-        auc_scores = []
 
         for t in thresholds:
-            true_t = agg_true[:, i] >= t
+            true_t = agg_true[:, i]
             pred_t = agg_pred[:, i] >= t
 
             f_scores.append(f1_score(true_t, pred_t, zero_division=0))
@@ -185,9 +185,8 @@ def get_farpa_scores(y_true, y_pred, window_size=0):
             r_scores.append(recall_score(true_t, pred_t, zero_division=0))
             p_scores.append(precision_score(true_t, pred_t, zero_division=0))
 
-            # AUC calculations
-            fpr, tpr, _ = roc_curve(true_t, pred_t)
-            auc_scores.append(auc(fpr, tpr))
+        # AUC calculation
+        auc_score = roc_auc_score(agg_true[:, i], agg_pred[:, i])
 
         farpa_dict['V%s' % (i+4)] = {
             'thresholds': thresholds,
@@ -195,17 +194,17 @@ def get_farpa_scores(y_true, y_pred, window_size=0):
             'a_scores': a_scores,
             'r_scores': r_scores,
             'p_scores': p_scores,
-            'auc_scores': auc_scores
+            'auc_score': auc_score
         }
     return farpa_dict
 
 
-def plot_single_farpa_curve(v_dict, ax, title):
+def plot_single_farp_curve(v_dict, ax, title):
     """
-    Plots a single FARPA curve
+    Plots a single FARP curve
 
     Input(s):
-    - v_dict: (dict) Dictionary of calculated FARPA scores for a given difficulty class
+    - v_dict: (dict) Dictionary of calculated FARP scores for a given difficulty class
     - ax: Matplotlib axis object
     - title (string) Title of plot
     """
@@ -213,22 +212,22 @@ def plot_single_farpa_curve(v_dict, ax, title):
     ax.plot(v_dict['thresholds'], v_dict['a_scores'], label='Accuracy')
     ax.plot(v_dict['thresholds'], v_dict['r_scores'], label='Recall')
     ax.plot(v_dict['thresholds'], v_dict['p_scores'], label='Precision')
-    ax.plot(v_dict['thresholds'], v_dict['auc_scores'], label='AUC')
     ax.set_xlabel('Thresholds')
     ax.set_title(title)
     ax.legend()
     return None
 
 
-def get_global_metrics(farpa_dict):
+def get_global_metrics(farp_dict):
     """
     Finds global metrics for model performance across difficulty classes
 
     Input(s):
-    - farpa_dict: (dict)
+    - farp_dict: (dict)
 
     Output(s):
-    - global_scores: (dict)
+    - local_stats: (dict of dicts)
+    - global_stats: (dict)
     """
     running_f = []
     running_a = []
@@ -236,14 +235,14 @@ def get_global_metrics(farpa_dict):
     running_p = []
     running_auc = []
 
-    for v_class, v_dict in farpa_dict.items():
+    for v_class, v_dict in farp_dict.items():
         index = find_index_balanced_rp(v_dict['r_scores'], v_dict['p_scores'])
 
         running_f.append(v_dict['f_scores'][index])
         running_a.append(v_dict['a_scores'][index])
         running_r.append(v_dict['r_scores'][index])
         running_p.append(v_dict['p_scores'][index])
-        running_auc.append(v_dict['auc_scores'][index])
+        running_auc.append(v_dict['auc_score'])
 
     # Global metrics aggregations
     global_stats = {
@@ -253,7 +252,20 @@ def get_global_metrics(farpa_dict):
         'Precision': np.mean(running_p),
         'AUC': np.mean(running_auc)
     }
-    return global_stats
+
+    # Local metrics
+    local_stats = dict()
+    for i, v_class in enumerate(farp_dict.keys()):
+        tmp_metrics = {
+            'F1': running_f[i],
+            'Accuracy': running_a[i],
+            'Recall': running_r[i],
+            'Precision': running_p[i],
+            'AUC': running_auc[i]
+        }
+        local_stats[v_class] = tmp_metrics
+
+    return local_stats, global_stats
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -281,6 +293,8 @@ def plot_confusion_matrix(y_true, y_pred, title, ax, window_size=0):
 
     # Plot confusion matrix
     sn.heatmap(confusion_df, annot=True, fmt='d', ax=ax)
+    ax.set_ylabel('True')
+    ax.set_xlabel('Pred')
     ax.set_title(title)
 
     return None
@@ -305,9 +319,9 @@ def evaluate_correlation(y_true, y_pred, title, fig_save_path):
     return None
 
 
-def evaluate_farpa(y_true, y_pred, title, fig_save_path):
+def evaluate_farp(y_true, y_pred, title, fig_save_path):
     """
-    FARPA plot wrapper
+    FARP plot wrapper
     """
     _, n = y_true.shape
     fig_dim = 8
@@ -315,25 +329,25 @@ def evaluate_farpa(y_true, y_pred, title, fig_save_path):
     fig, ax = plt.subplots(n, 2, figsize=(2*(fig_dim+1), n*fig_dim))
     ax = ax.flatten()
 
-    # Get FARPA curves
-    farpa_dict_s0 = get_farpa_scores(y_true, y_pred, window_size=0)
-    farpa_dict_s1 = get_farpa_scores(y_true, y_pred, window_size=1)
+    # Get FARP curves
+    farp_dict_s0 = get_farp_scores(y_true, y_pred, window_size=0)
+    farp_dict_s1 = get_farp_scores(y_true, y_pred, window_size=1)
 
     v_grades = ['V%s' % (i+4) for i in range(n)]
 
-    # Plot FARPA curves
+    # Plot FARP curves
     cnt = 0
     for v_grade in v_grades:
-        plot_single_farpa_curve(farpa_dict_s0[v_grade], ax[cnt], '%s Window Size 0' % v_grade)
+        plot_single_farp_curve(farp_dict_s0[v_grade], ax[cnt], '%s Window Size 0' % v_grade)
         cnt += 1
-        plot_single_farpa_curve(farpa_dict_s1[v_grade], ax[cnt], '%s Window Size 1' % v_grade)
+        plot_single_farp_curve(farp_dict_s1[v_grade], ax[cnt], '%s Window Size 1' % v_grade)
         cnt += 1
 
     fig.suptitle(title)
     plt.savefig(fig_save_path)
     plt.clf()
 
-    return farpa_dict_s0, farpa_dict_s1
+    return farp_dict_s0, farp_dict_s1
 
 
 def evaluate_confusion(y_true, y_pred, title, fig_save_path):
@@ -355,15 +369,25 @@ def evaluate_confusion(y_true, y_pred, title, fig_save_path):
     return None
 
 
-def evaluate_global(farpa_dict_s0, farpa_dict_s1):
+def evaluate_global(farp_dict_s0, farp_dict_s1):
     """
     Global statistics wrapper
     """
+    local_s0, global_s0 = get_global_metrics(farp_dict_s0)
+    local_s1, global_s1 = get_global_metrics(farp_dict_s1)
+
     global_stats = {
-        'Window 0': get_global_metrics(farpa_dict_s0),
-        'Window 1': get_global_metrics(farpa_dict_s1)
+        'Window 0 Local': local_s0,
+        'Window 0 Global': global_s0,
+        'Window 1 Local': local_s1,
+        'Window 1 Global': global_s1
     }
     return global_stats
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Main evaluation function
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -384,12 +408,12 @@ def evaluate_predictions(y_true, y_pred, exp_settings):
     evaluate_correlation(y_true, y_pred, description, exp_settings['corr_fig_save'])
 
     # FARPA curves
-    fd0, fd1 = evaluate_farpa(y_true, y_pred, description, exp_settings['farpa_fig_save'])
-    farpa_stats = {
+    fd0, fd1 = evaluate_farp(y_true, y_pred, description, exp_settings['farp_fig_save'])
+    farp_stats = {
         'Window 0': fd0,
         'Window 1': fd1
     }
-    save_pickle(farpa_stats, exp_settings['farpa_stats_save'])
+    save_pickle(farp_stats, exp_settings['farp_stats_save'])
 
     # Confusion matrices
     evaluate_confusion(y_true, y_pred, description, exp_settings['confusion_fig_save'])
@@ -398,4 +422,4 @@ def evaluate_predictions(y_true, y_pred, exp_settings):
     global_stats = evaluate_global(fd0, fd1)
     save_pickle(global_stats, exp_settings['global_stats_save'])
 
-    return farpa_stats, global_stats
+    return farp_stats, global_stats

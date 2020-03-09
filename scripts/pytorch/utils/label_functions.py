@@ -2,6 +2,8 @@
 
 # Script for defining labels in various formats (i.e. flat list, one-hot, etc...)
 
+import pdb
+
 import numpy as np
 
 from scripts.pytorch.utils.full_process_utils import *
@@ -37,7 +39,7 @@ def gen_labels_idxs(full_processed, nodes_keys):
             labels[i] = grades_dict[key]
 
     # Get set of difficulties
-    labels_set = sorted(list(set(labels)))
+    labels_set = sorted(list(set(labels)))  # Note that hold nodes get assigned label 0
 
     # Instantiate dictionary to define re-mapping difficulty to start from 0
     labels_dict = dict()

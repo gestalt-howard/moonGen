@@ -110,7 +110,7 @@ def sample_nodes_balanced_replaced(nodes_grades_dict, params):
     # Instantiate list to store sampled nodes
     node_samples = []
 
-    # Sample from a specific grade / difficulty level
+    # Sample from a specific grade / difficulty level with replacement
     for grade in target_grades:
         for i in range(num_per_core):
             random_idx = np.random.randint(0, len(grades_dict[grade]))

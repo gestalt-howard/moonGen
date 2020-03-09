@@ -2,6 +2,8 @@
 
 # This script contains processing functions that define node features for input into a graph neural network
 
+import pdb
+
 import numpy as np
 
 from scripts.pytorch.utils.full_process_utils import *
@@ -74,11 +76,11 @@ def gen_multihotfeatures(full_processed, nodes_keys):
 
         # One-hot for holds
         if 'h' in node_type:
-            multihot_features[i][nodes_keys.index(n)] = 1
+            multihot_features[i][hold_names_map.index(n)] = 1
 
         # Multi-hot for problems
         if 'p' in node_type:
             hold_nodes = prob_hold_map[n]
             for h in hold_nodes:
-                multihot_features[i][nodes_keys.index(h)] = 1
+                multihot_features[i][hold_names_map.index(h)] = 1
     return multihot_features
