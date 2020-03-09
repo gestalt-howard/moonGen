@@ -407,7 +407,7 @@ def evaluate_predictions(y_true, y_pred, exp_settings):
     # Correlation
     evaluate_correlation(y_true, y_pred, description, exp_settings['corr_fig_save'])
 
-    # FARPA curves
+    # FARP curves
     fd0, fd1 = evaluate_farp(y_true, y_pred, description, exp_settings['farp_fig_save'])
     farp_stats = {
         'Window 0': fd0,

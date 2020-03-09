@@ -82,7 +82,7 @@ class SubGraphProcess:
             'adjacency_redo': False,
             'label_redo': False
         }
-        self.default_func = {
+        self.default_func = {  # Processing function names
             'feature': gen_onehotfeatures,
             'adjacency': gen_adjacency,
             'label': gen_labels_idxs,
@@ -90,10 +90,8 @@ class SubGraphProcess:
         }
         self.default_sampling_params = {
             'num_per_core': 100,               # Number of samples for each class
-            'target_grade': 0,                 #
-            'target_grades': list(range(16)),  # Range of difficulty classes
-            'sample_nodes_path': self.save_data_dir + '/' + self.default_names['core_nodes_name'],
-            'unbalance_multiplier': 10
+            'target_grades': list(range(4, 15)),  # Range of difficulty classes
+            'sample_nodes_path': self.save_data_dir + '/' + self.default_names['core_nodes_name']
         }
 
         # Set defaults
@@ -113,13 +111,20 @@ class SubGraphProcess:
         Initializes settings (dictionary values) to default if given settings are empty
         """
         for name in self.default_names:
-            set_default_dict(self.names_dict, name, '', self.default_names[name])
+            self.names_dict[name] = set_default_dict(self.names_dict, name, '', self.default_names[name])
         for redo in self.default_redo:
-            set_default_dict(self.redo_dict, redo, '', self.default_redo[redo])
+            self.redo_dict[redo] = set_default_dict(self.redo_dict, redo, '', self.default_redo[redo])
         for func in self.default_func:
-            set_default_dict(self.functions_dict, func, None, self.default_func[func])
-        for param in self.sampling_params:
-            set_default_dict(self.sampling_params, param, None, self.default_sampling_params[param])
+            self.functions_dict[func] = set_default_dict(self.functions_dict, func, None, self.default_func[func])
+
+        # Default sampling parameters
+        for param in self.default_sampling_params:
+            self.sampling_params[param] = set_default_dict(
+                self.sampling_params,
+                param,
+                None,
+                self.default_sampling_params[param]
+            )
         return None
 
     def load_full_processed(self):
@@ -133,7 +138,7 @@ class SubGraphProcess:
         """
         Sample a subset of problem nodes from each difficulty class
         """
-        print('Sampling core nodes...')
+        print('\nSampling core nodes...')
 
         # Get save path
         core_nodes_path = self.save_data_dir + self.names_dict['core_nodes_name']
@@ -198,7 +203,7 @@ class SubGraphProcess:
         """
         Gets node features
         """
-        print('Getting samples node features...')
+        print('\nGetting samples node features...')
         self.features = self.process_nodes('features_name', 'feature_redo', 'feature')
         return None
 
@@ -206,7 +211,7 @@ class SubGraphProcess:
         """
         Gets adjacency matrix
         """
-        print('Getting samples node adjacency...')
+        print('\nGetting samples node adjacency...')
         self.adjacency = self.process_nodes('adjacency_name', 'adjacency_redo', 'adjacency')
         return None
 
@@ -214,7 +219,7 @@ class SubGraphProcess:
         """
         Gets labels for nodes
         """
-        print('Getting samples node labels...')
+        print('\nGetting samples node labels...')
         self.labels = self.process_nodes('labels_name', 'label_redo', 'label')
         return None
 

@@ -83,9 +83,9 @@ class GraphDataProcess:
         Initializes settings (dictionary values) to default if given settings are empty
         """
         for name in self.default_names:
-            set_default_dict(self.names_dict, name, '', self.default_names[name])
+            self.names_dict[name] = set_default_dict(self.names_dict, name, '', self.default_names[name])
         for redo in self.default_redo:
-            set_default_dict(self.redo_dict, redo, '', self.default_redo[redo])
+            self.redo_dict[redo] = set_default_dict(self.redo_dict, redo, '', self.default_redo[redo])
         return None
 
     def get_node_mapping(self):
