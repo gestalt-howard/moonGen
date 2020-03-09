@@ -4,7 +4,7 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-from pytorch.GCN.GraphConvolution import GraphConvolution
+from scripts.pytorch.GCN.GraphConvolution import GraphConvolution
 
 
 class GCN(nn.Module):

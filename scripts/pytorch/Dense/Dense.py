@@ -4,7 +4,7 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
-from pytorch.Dense.DenseLayer import DenseLayer
+from scripts.pytorch.Dense.DenseLayer import DenseLayer
 
 
 class Dense(nn.Module):

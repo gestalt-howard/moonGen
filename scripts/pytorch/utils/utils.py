@@ -351,43 +351,6 @@ def rev_dict(mapping):
     return rev_mapping
 
 
-def set_paths(model_type, ver, data_dir, result_dir):
-    """
-    Sets some default paths and makes default directories if they don't exist
-
-    Input(s):
-    - model_type (string): Type of neural network (i.e. GCN, Dense)
-    - ver (string): Iteration of specific type of neural network
-    -
-    """
-    # Setup data directory
-    if not os.path.exists(data_dir):
-        os.mkdir(data_dir)
-
-    # Setup results directory
-    if not os.path.exists(result_dir):
-        os.mkdir(result_dir)
-
-    # Setup
-    data_path = data_dir + model_type + '/'
-    if not os.path.exists(data_path):
-        os.mkdir(data_path)
-
-    data_path = data_path + ver + '/'
-    if not os.path.exists(data_path):
-        os.mkdir(data_path)
-
-    result_path = result_dir + model_type + '/'
-    if not os.path.exists(result_path):
-        os.mkdir(result_path)
-
-    result_path = result_path + ver + '/'
-    if not os.path.exists(result_path):
-        os.mkdir(result_path)
-
-    return data_path, result_path
-
-
 def remove_redo_paths(redo, paths_list):
     """
     Deletes all items in a given list of paths from hard-drive memory.
