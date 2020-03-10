@@ -107,6 +107,22 @@ def get_model_preds(model, x_trn, x_tst):
     return y_trn_pred, y_tst_pred
 
 
+def run_evaluation(settings_dict):
+    """
+    Determine need for re-running evaluation
+    """
+    save_paths = []
+    for name, path in settings_dict.items():
+        if 'save' in name:
+            save_paths.append(path)
+
+    if all([path_exists(p) for p in save_paths]):
+        print('Evaluation results already exist!')
+        return False
+    else:
+        return True
+
+
 def get_model_evals(model, param_dict, data_dict):
     """
     Runs model evaluation
@@ -123,12 +139,26 @@ def get_model_evals(model, param_dict, data_dict):
     y_tst_true = onehot_labels(y_tst, y_tst_pred.shape[1])
 
     # Train evaluation
-    print('Train evaluation...')
-    evaluate_predictions(y_trn_true, y_trn_pred, param_dict['trn_settings'])
+    print('\nTrain evaluation...')
+    if run_evaluation(param_dict['trn_settings']):
+        evaluate_predictions(y_trn_true, y_trn_pred, param_dict['trn_settings'])
 
     # Test evaluation
-    print('Test evaluation...')
-    evaluate_predictions(y_tst_true, y_tst_pred, param_dict['tst_settings'])
+    print('\nTest evaluation...')
+    if run_evaluation(param_dict['tst_settings']):
+        evaluate_predictions(y_tst_true, y_tst_pred, param_dict['tst_settings'])
+    return None
+
+
+def fit_and_evaluate(model, param_dict, data_dict):
+    """
+    Wrapper for train_model() and get_model_evals()
+    """
+    # Fit model, if required
+    model = train_model(model, param_dict, data_dict)
+
+    # Model evaluation
+    get_model_evals(model, param_dict, data_dict)
     return None
 
 
@@ -137,6 +167,8 @@ def get_model_evals(model, param_dict, data_dict):
 # ----------------------------------------------------------------------------------------------------------------------
 def run_logistic_regression(param_dict, data_dict):
     """
+    Defines a logistic regression experiment
+
     Input(s):
     - param_dict (dict)
     - data_dict (dict)
@@ -152,11 +184,82 @@ def run_logistic_regression(param_dict, data_dict):
     }
     model = LogisticRegression(**lr_params)
 
-    # Fit model, if required
-    model = train_model(model, param_dict, data_dict)
+    fit_and_evaluate(model, param_dict, data_dict)
+    return None
 
-    # Model evaluation
-    get_model_evals(model, param_dict, data_dict)
+
+def run_svm(param_dict, data_dict):
+    """
+    Defines a SVM experiment
+    """
+    # Define SVM model
+    svm_params = {
+        'probability': True,
+        'max_iter': -1,
+        'C': 2,  # Inverse of regularization weight
+        'verbose': 1,
+        'random_state': 7
+    }
+    model = SVC(**svm_params)
+
+    fit_and_evaluate(model, param_dict, data_dict)
+    return None
+
+
+def run_random_forest(param_dict, data_dict):
+    """
+    Defines a random forest experiment
+    """
+    # Define random forest model
+    rf_params = {
+        'n_estimators': 500,
+        'n_jobs': -1,
+        'verbose': 1,
+        'random_state': 7,
+        'bootstrap': True,
+        'max_samples': 0.8
+    }
+    model = RandomForestClassifier(**rf_params)
+
+    fit_and_evaluate(model, param_dict, data_dict)
+    return None
+
+
+def run_boosting(param_dict, data_dict):
+    """
+    Defines a boosting experiment
+    """
+    # Define boosting model
+    boosting_params = {
+        'learning_rate': 0.05,
+        'n_estimators': 300,
+        'subsample': 0.8,
+        'verbose': 1,
+        'random_state': 7
+    }
+    model = GradientBoostingClassifier(**boosting_params)
+
+    fit_and_evaluate(model, param_dict, data_dict)
+    return None
+
+
+def run_mlp(param_dict, data_dict):
+    """
+    Defines a Multi-Layer Perceptron experiment
+    """
+    # Define MLP model
+    mlp_params = {
+        'hidden_layer_sizes': (200, 100, 50),
+        'activation': 'relu',
+        'solver': 'adam',
+        'batch_size': 2000,
+        'shuffle': True,
+        'verbose': 1,
+        'random_state': 7
+    }
+    model = MLPClassifier(**mlp_params)
+
+    fit_and_evaluate(model, param_dict, data_dict)
     return None
 
 
@@ -197,7 +300,17 @@ def main():
     print_header('LOGISTIC REGRESSION')
     run_logistic_regression(params_dict[0], data_dict)
 
+    print_header('SUPPORT VECTOR MACHINE')
+    run_svm(params_dict[1], data_dict)
 
+    print_header('RANDOM FOREST')
+    run_random_forest(params_dict[2], data_dict)
+
+    print_header('GRADIENT BOOSTING')
+    run_boosting(params_dict[3], data_dict)
+
+    print_header('MULTI-LAYER PERCEPTRON')
+    run_mlp(params_dict[4], data_dict)
     return None
 
 

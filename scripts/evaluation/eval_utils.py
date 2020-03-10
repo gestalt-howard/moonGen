@@ -86,7 +86,7 @@ def print_header(text):
     """
     Prints header block
     """
-    print('-'*40 + '\n' + text + '\n' + '-'*40)
+    print('\n' + '-'*40 + '\n' + text + '\n' + '-'*40)
     return None
 
 
