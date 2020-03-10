@@ -186,7 +186,10 @@ def get_farp_scores(y_true, y_pred, window_size=0):
             p_scores.append(precision_score(true_t, pred_t, zero_division=0))
 
         # AUC calculation
-        auc_score = roc_auc_score(agg_true[:, i], agg_pred[:, i])
+        try:
+            auc_score = roc_auc_score(agg_true[:, i], agg_pred[:, i])
+        except ValueError:
+            auc_score = np.nan
 
         farpa_dict['V%s' % (i+4)] = {
             'thresholds': thresholds,
@@ -246,11 +249,11 @@ def get_global_metrics(farp_dict):
 
     # Global metrics aggregations
     global_stats = {
-        'F1': np.mean(running_f),
-        'Accuracy': np.mean(running_a),
-        'Recall': np.mean(running_r),
-        'Precision': np.mean(running_p),
-        'AUC': np.mean(running_auc)
+        'F1': np.nanmean(running_f),
+        'Accuracy': np.nanmean(running_a),
+        'Recall': np.nanmean(running_r),
+        'Precision': np.nanmean(running_p),
+        'AUC': np.nanmean(running_auc)
     }
 
     # Local metrics
@@ -422,4 +425,4 @@ def evaluate_predictions(y_true, y_pred, exp_settings):
     global_stats = evaluate_global(fd0, fd1)
     save_pickle(global_stats, exp_settings['global_stats_save'])
 
-    return farp_stats, global_stats
+    return None

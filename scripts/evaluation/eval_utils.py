@@ -6,6 +6,8 @@ import os
 import h5py
 import pickle
 
+import numpy as np
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # General helper functions
@@ -78,6 +80,24 @@ def maybe_pickle(data, fname):
     if not path_exists(fname):
         save_pickle(data, fname)
     return None
+
+
+def print_header(text):
+    """
+    Prints header block
+    """
+    print('-'*40 + '\n' + text + '\n' + '-'*40)
+    return None
+
+
+def onehot_labels(labels, num_labels):
+    """
+    Casts flat labels as one-hot vectors
+    """
+    onehot = np.zeros((len(labels), num_labels))
+    for i, l in enumerate(labels):
+        onehot[i][l] = 1
+    return onehot
 
 
 # ----------------------------------------------------------------------------------------------------------------------

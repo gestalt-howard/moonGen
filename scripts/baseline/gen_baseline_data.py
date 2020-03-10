@@ -1,6 +1,11 @@
 # Author(s): Howard Tai
 
-# Script for setting up / formatting data for running baseline experiments on
+# Script for setting up / formatting data for running baseline experiments on. Some key details are:
+# - Sampling with replacement for balanced class sizes
+# - 2000 samples per class out of 11 classes (V4 - V14)
+# - Multi-hot features
+
+import numpy as np
 
 from scripts.pytorch.sub_data_process import SubGraphProcess
 from scripts.pytorch.full_data_process import GraphDataProcess
@@ -9,6 +14,9 @@ from scripts.pytorch.utils.utils import get_func_dict, sample_and_load_pytorch_d
 from scripts.evaluation.eval_utils import path_exists, save_pickle, load_pickle, make_directory
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Data processing functions
+# ----------------------------------------------------------------------------------------------------------------------
 def gen_full_processed_data(raw_data_path, save_data_dir):
     """
     Generates object wrapper on data structure containing processed version raw mined MoonBoard data
@@ -63,6 +71,7 @@ def gen_sub_processed_data(full_processed_path, save_data_dir):
     if path_exists(save_path):
         return load_pickle(save_path)
 
+    # Define SubGraphProcess object and run processing
     sub_processed_obj = SubGraphProcess(
         full_processed_path,
         save_data_dir,
@@ -73,6 +82,23 @@ def gen_sub_processed_data(full_processed_path, save_data_dir):
 
     save_pickle(sub_processed_obj, save_path)
     return sub_processed_obj
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Split formatting functions
+# ----------------------------------------------------------------------------------------------------------------------
+def get_data_split(features, labels, idx_set):
+    """
+    Given a tensors of features and labels, return trn-dev-tst splits
+
+    Input(s):
+    - features (PyTorch tensor)
+    - labels (PyTorch tensor)
+    - idx_set (PyTorch tensor)
+    """
+    x = features[idx_set].numpy()
+    y = labels[idx_set].numpy()
+    return x, y
 
 
 def get_features_and_labels(sub_processed_obj, pytorch_data_dir, baseline_data_dir):
@@ -94,14 +120,30 @@ def get_features_and_labels(sub_processed_obj, pytorch_data_dir, baseline_data_d
         split_ratio_dict,
         pytorch_data_dir
     )
+
+    x_trn, y_trn = get_data_split(features, labels, idx_train)
+    x_dev, y_dev = get_data_split(features, labels, idx_dev)
+    x_tst, y_tst = get_data_split(features, labels, idx_test)
+
+    # Save data
+    save_path = baseline_data_dir + 'data_dict.pickle'
+    data_dict = {
+        'trn': {'x': x_trn, 'y': y_trn},
+        'dev': {'x': x_dev, 'y': y_dev},
+        'tst': {'x': x_tst, 'y': y_tst}
+    }
+    save_pickle(data_dict, save_path)
     return None
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Main
+# ----------------------------------------------------------------------------------------------------------------------
 def main():
     """
     Executes data setup for baseline models
     """
-    # Root save path
+    # Root path
     root_path = 'C:/Users/chetai/Desktop/'
 
     # Raw data path
@@ -127,7 +169,6 @@ def main():
 
     # Get data splits
     get_features_and_labels(sub_processed_obj, pytorch_data_dir, baseline_data_dir)
-
     return None
 
 
