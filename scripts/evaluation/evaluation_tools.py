@@ -319,6 +319,7 @@ def evaluate_correlation(y_true, y_pred, title, fig_save_path):
 
     plt.savefig(fig_save_path)
     plt.clf()
+    plt.close()
     return None
 
 
@@ -349,6 +350,7 @@ def evaluate_farp(y_true, y_pred, title, fig_save_path):
     fig.suptitle(title)
     plt.savefig(fig_save_path)
     plt.clf()
+    plt.close()
 
     return farp_dict_s0, farp_dict_s1
 
@@ -368,6 +370,7 @@ def evaluate_confusion(y_true, y_pred, title, fig_save_path):
 
     plt.savefig(fig_save_path)
     plt.clf()
+    plt.close()
 
     return None
 

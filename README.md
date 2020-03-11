@@ -5,15 +5,15 @@ Classifying difficulty of climbing routes on the MoonBoard apparatus using novel
 Completely finished:
 * Scraping
 * Baseline PyTorch framework: Dense (Fully-Connected), GCN
+* Baseline statistical learning models
 
 Partially finished:
-* Baseline statistical learning models
 * Evaluation metrics
 
 ## Action Plan
 ### Low-Effort
 * Adding in orientation features
-* Battery of statistical learning models
+* Batch-running NN experiments
 
 ### Medium-Effort
 * Re-defining PMI calculation in hold-hold adjacency relationship
