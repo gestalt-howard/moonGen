@@ -62,6 +62,11 @@ class NodeMapping:
     def get_holds_set(self):
         """
         Initializes hold coordinates as x, y (Cartesian) pairs
+
+        - num_rows = length of y axis
+        - num_cols = length of x axis
+
+        Origin (0, 0) at bottom, left of MoonBoard
         """
         self.holds = []
         for i in range(self.num_rows):

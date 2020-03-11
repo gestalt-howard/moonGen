@@ -172,6 +172,23 @@ def binary_adjacency_diag_norm(full_processed, nodes_keys):
     return norm_adjacency(set_diagonal(binary_adjacency(full_processed, nodes_keys)))
 
 
+def gen_adjacency_diag_norm(full_processed, nodes_keys):
+    """
+    Input:
+        1. full_processed (from full_data_process.py)
+        2. nodes_keys
+
+    Output: normalized pmi/tfidf adjacency with self-adjacency
+
+    Description:
+        Runs normalization on pmi/tfidf adjacency matrix with self-adjacency
+
+    Purpose:
+        Needed to get pmi/tfidf adjacency matrix
+    """
+    return norm_adjacency(set_diagonal(gen_adjacency(full_processed, nodes_keys)))
+
+
 def gen_adjacency_diag_norm_diag(full_processed, nodes_keys):
     """
     Input:
@@ -188,20 +205,3 @@ def gen_adjacency_diag_norm_diag(full_processed, nodes_keys):
         Needed to get pmi/tfidf adjacency matrix, resetting self-adjacency
     """
     return set_diagonal(norm_adjacency(set_diagonal(gen_adjacency(full_processed, nodes_keys))))
-
-
-def gen_adjacency_diag_norm(full_processed, nodes_keys):
-    """
-    Input:
-        1. full_processed (from full_data_process.py)
-        2. nodes_keys
-
-    Output: normalized pmi/tfidf adjacency with self-adjacency
-
-    Description:
-        Runs normalization on pmi/tfidf adjacency matrix with self-adjacency
-
-    Purpose:
-        Needed to get pmi/tfidf adjacency matrix
-    """
-    return norm_adjacency(set_diagonal(gen_adjacency(full_processed, nodes_keys)))

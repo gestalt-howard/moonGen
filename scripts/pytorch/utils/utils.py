@@ -299,6 +299,29 @@ def save_pickle(data, path):
     return None
 
 
+def make_directory(path):
+    """
+    Creates a directory if it doesn't already exist
+    """
+    if not os.path.exists(path):
+        os.mkdir(path)
+    return None
+
+
+def make_sub_dirs(model_type, ver, main_dir):
+    """
+    Creates experiment sub-directories under main storage directory
+    """
+    sub_dir_1 = main_dir + model_type + '/'
+    sub_dir_2 = sub_dir_1 + ver + '/'
+
+    make_directory(main_dir)
+    make_directory(sub_dir_1)
+    make_directory(sub_dir_2)
+
+    return sub_dir_2
+
+
 def set_default(current_val, fail_val, default_val):
     """
     Input:

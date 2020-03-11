@@ -73,8 +73,7 @@ class SubGraphProcess:
             'core_nodes_name': 'core_nodes.pickle',
             'features_name': 'sampled_features.pickle',
             'adjacency_name': 'sampled_adjacency.pickle',
-            'labels_name': 'sampled_labels.pickle',
-            'problem_idxs_name': 'sampled_problem_idxs.pickle'
+            'labels_name': 'sampled_labels.pickle'
         }
         self.default_redo = {
             'core_nodes_redo': False,
@@ -89,9 +88,8 @@ class SubGraphProcess:
             'sampling': sample_nodes_balanced
         }
         self.default_sampling_params = {
-            'num_per_core': 100,               # Number of samples for each class
-            'target_grades': list(range(4, 15)),  # Range of difficulty classes
-            'sample_nodes_path': self.save_data_dir + '/' + self.default_names['core_nodes_name']
+            'num_per_core': 100,                 # Number of samples for each class
+            'target_grades': list(range(4, 15))  # Range of difficulty classes
         }
 
         # Set defaults

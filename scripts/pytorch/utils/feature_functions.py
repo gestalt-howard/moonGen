@@ -70,15 +70,15 @@ def gen_multihotfeatures(full_processed, nodes_keys):
     # Placeholder
     multihot_features = np.zeros((len(nodes_keys), len(hold_names_map)))
 
-    # Iterate through nodes
+    # Iterate through all nodes
     for i, n in enumerate(nodes_keys):
         node_type = nodes_types_map[n]
 
-        # One-hot for holds
+        # One-hot for hold nodes
         if 'h' in node_type:
             multihot_features[i][hold_names_map.index(n)] = 1
 
-        # Multi-hot for problems
+        # Multi-hot for problem nodes
         if 'p' in node_type:
             hold_nodes = prob_hold_map[n]
             for h in hold_nodes:
