@@ -170,7 +170,7 @@ def get_gcn_params(hidden_layers, num_epochs, dropout=0.2, lr=0.01, weight_decay
 # ----------------------------------------------------------------------------------------------------------------------
 # Root and main parameter setup function
 # ----------------------------------------------------------------------------------------------------------------------
-def get_general_params(model_type, version, data_dir, result_dir, raw_data_path, full_redo=False, sub_redo=False):
+def get_general_params(model_type, version, data_dir, result_dir, raw_data_path):
     """
     Setups general parameters for an experiment
 
@@ -180,8 +180,6 @@ def get_general_params(model_type, version, data_dir, result_dir, raw_data_path,
     - data_dir (string): Directory path to main data save folder
     - result_dir (string): Directory path to main result save folder
     - raw_data_path (string): Path to location of raw-mined MoonBoard data
-    - full_redo (bool)
-    - sub_redo (bool)
     """
     data_path = make_sub_dirs(model_type, version, data_dir)
     result_path = make_sub_dirs(model_type, version, result_dir)
@@ -194,9 +192,7 @@ def get_general_params(model_type, version, data_dir, result_dir, raw_data_path,
         'raw_data_path': raw_data_path,
         'data_dir': data_dir,
         'data_path': data_path,
-        'result_path': result_path,
-        'full_redo': full_redo,
-        'sub_redo': sub_redo
+        'result_path': result_path
     }
     return params
 
