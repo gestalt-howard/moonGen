@@ -282,6 +282,14 @@ def get_split_dict(core_nodes_id_dict, hold_nodes_id_dict, split_ratio_dict):
 # ----------------------------------------------------------------------------------------------------------------------
 # General Utils
 # ----------------------------------------------------------------------------------------------------------------------
+def print_header(text):
+    """
+    Prints header block
+    """
+    print('\n' + '-'*40 + '\n' + text + '\n' + '-'*40)
+    return None
+
+
 def load_pickle(path):
     """
     Loads a pickled object
@@ -460,6 +468,7 @@ def sample_and_load_pytorch_data(subgraph_data_obj, split_ratio_dict, save_path,
 
     # Load tensors if they already exist
     if all(os.path.exists(save_path + file) for file in files):
+        print('Loading data splits...')
         features = load_pickle(save_path + 'features.pickle')
         adj = load_pickle(save_path + 'adj.pickle')
         labels = load_pickle(save_path + 'labels.pickle')
@@ -467,6 +476,7 @@ def sample_and_load_pytorch_data(subgraph_data_obj, split_ratio_dict, save_path,
         idx_dev = load_pickle(save_path + 'idx_dev.pickle')
         idx_test = load_pickle(save_path + 'idx_test.pickle')
     else:
+        print('Forming data splits...')
         # Define data splits
         core_nodes_id_dict = subgraph_data_obj.core_nodes_id_dict
         hold_nodes_id_dict = subgraph_data_obj.hold_nodes_id_dict

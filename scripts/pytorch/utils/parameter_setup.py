@@ -186,7 +186,7 @@ def get_general_params(model_type, version, data_dir, result_dir, raw_data_path)
 
     params = {
         'model_type': model_type,
-        'ver': version,
+        'version': version,
         'full_processed_name': 'full_processed.pickle',
         'sub_processed_name': 'sub_processed.pickle',
         'raw_data_path': raw_data_path,

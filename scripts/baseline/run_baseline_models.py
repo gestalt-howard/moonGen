@@ -271,7 +271,7 @@ def main():
     Runs baseline experiments
     """
     # Root path
-    root_path = 'C:/Users/chetai/Desktop/'
+    root_path = 'C:/Users/chetai/Desktop/'  # CHANGE TO PROPER DIRECTORY
     baseline_dir = root_path + 'moonboard_baseline/'
 
     # Models path
