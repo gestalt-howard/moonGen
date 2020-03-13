@@ -41,7 +41,7 @@ def gen_full_processed_data(raw_data_path, save_data_dir):
     return full_processed_obj, save_path
 
 
-def gen_sub_processed_data(full_processed_path, save_data_dir):
+def gen_sub_processed_data(full_processed_path, save_data_dir, num_per_class):
     """
     Generates object wrapper on data structure containing sampled and feature-processed version of full_processed() data
     (Reference scripts.pytorch.sub_data_process.py)
@@ -62,7 +62,7 @@ def gen_sub_processed_data(full_processed_path, save_data_dir):
 
     # Specify sampling settings
     sampling_params = {
-        'num_per_core': 2000,
+        'num_per_core': num_per_class,
         'target_grades': list(range(4, 15)),
         'sample_nodes_path': save_data_dir + 'core_nodes.pickle'
     }
@@ -143,8 +143,10 @@ def main():
     """
     Executes data setup for baseline models
     """
+    num_per_class = 4000
+
     # Root path
-    root_path = 'C:/Users/chetai/Desktop/'
+    root_path = 'C:/Users/chetai/Desktop/'  # CHANGE TO PROPER DIRECTORY
 
     # Raw data path
     raw_data_path = root_path + 'moonboard_data.pickle'
@@ -165,7 +167,7 @@ def main():
     full_processed_obj, full_processed_path = gen_full_processed_data(raw_data_path, full_processed_dir)
 
     # Get sub-processed data
-    sub_processed_obj = gen_sub_processed_data(full_processed_path, sub_processed_dir)
+    sub_processed_obj = gen_sub_processed_data(full_processed_path, sub_processed_dir, 4000)
 
     # Get data splits
     get_features_and_labels(sub_processed_obj, pytorch_data_dir, baseline_data_dir)

@@ -99,7 +99,12 @@ def get_processing_function_params(
     Defines processing functions for generating features, adjacency, labels, and conducting sampling
     """
     assert feature in ['gen_onehotfeatures', 'gen_multihotfeatures']
-    assert adjacency in ['binary_adjacency_diag_norm', 'gen_adjacency_diag_norm', 'gen_adjacency_diag_norm_diag']
+    assert adjacency in [
+        'binary_adjacency_diag_norm',
+        'binary_adjacency_diag_norm_diag', 
+        'gen_adjacency_diag_norm',
+        'gen_adjacency_diag_norm_diag'
+    ]
     assert label in ['gen_labels_idxs', 'gen_onehot_labels_idxs']
     assert sampling in ['sample_nodes_balanced', 'sample_nodes_balanced_replaced', 'sample_target_nodes_balanced']
 

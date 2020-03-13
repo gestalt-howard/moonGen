@@ -3,6 +3,7 @@
 # This script contains code for batch-running many PyTorch-based experiments
 
 import copy
+import shutil
 
 import numpy as np
 
@@ -111,6 +112,7 @@ def setup_experiment(
         version: str,
         data_dir: str,
         result_dir: str,
+        raw_data_path: str,
         feature_func: str,
         adjacency_func: str,
         num_per_class: int,
@@ -135,7 +137,7 @@ def setup_experiment(
         'version': version,
         'data_dir': data_dir,
         'result_dir': result_dir,
-        'raw_data_path': 'C:/Users/chetai/Desktop/moonboard_data.pickle',
+        'raw_data_path': raw_data_path,
         'feature_func': feature_func,
         'adjacency_func': adjacency_func,
         'label_func': 'gen_labels_idxs',
@@ -324,6 +326,190 @@ def run_experiment(params):
 # Main
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
+    """
+    Defines, stages, and runs experiments
+    """
+    num_per_class = 50
+    num_epochs = 30
+
+    root_path = 'C:/Users/chetai/Desktop/'  # CHANGE TO PROPER DIRECTORY
+
+    data_dir = root_path + 'moonboard_data/'
+    result_dir = root_path + 'moonboard_results/'
+    raw_data_dir = root_path + 'moonboard_data.pickle'
+
+    # EXPERIMENTS
+
+    # Dense, Shallow, Multi-hot
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'Dense',
+        'version': 'v0_MH_Shallow',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # Dense, Deep, Multi-hot
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'Dense',
+        'version': 'v1_MH_Deep',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [128, 64, 32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, One-hot, PMI, 2 steps, small capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v0_OH_PMI_2S_small',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_onehotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, One-hot, PMI, 2 steps, large capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v1_OH_PMI_2S_large',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_onehotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [128],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, Multi-hot, PMI, 2 steps, small capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v2_MH_PMI_2S_small',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, Multi-hot, PMI, 2 steps, large capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v3_MH_PMI_2S_large',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [128],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, Multi-hot, Binary, 2 steps, small capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v4_MH_BIN_2S_small',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'binary_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, Multi-hot, Binary (reset), 2 steps, small capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v5_MH_RS-BIN_2S_small',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'binary_adjacency_diag_norm_diag',
+        'num_per_class': num_per_class,
+        'hidden_layers': [32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, Multi-hot, PMI (reset), 2 steps, small capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v6_MH_RS-PMI_2S_small',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm_diag',
+        'num_per_class': num_per_class,
+        'hidden_layers': [32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
+    # GCN, Multi-hot, PMI, 4 steps, large capacity
+    # ------------------------------------------------------------------------------------------------------------------
+    exp_dict = {
+        'model_type': 'GCN',
+        'version': 'v7_MH_PMI_4S_large',
+        'data_dir': data_dir,
+        'result_dir': result_dir,
+        'raw_data_path': raw_data_dir,
+        'feature_func': 'gen_multihotfeatures',
+        'adjacency_func': 'gen_adjacency_diag_norm',
+        'num_per_class': num_per_class,
+        'hidden_layers': [128, 64, 32],
+        'num_epochs': num_epochs
+    }
+    params = setup_experiment(**exp_dict)
+    run_experiment(params)
+
     return None
 
 
