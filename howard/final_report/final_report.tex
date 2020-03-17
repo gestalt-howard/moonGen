@@ -45,12 +45,12 @@
 
 % Abstract Section
 \begin{abstract}
-The abstract should consist of 1 paragraph describing the motivation for your paper and a high-level explanation of the methodology you used/results obtained.
+Assigning difficulties to rock climbing problems is often a contentious procedure. In this work, we pioneer the application of graph convolutonal networks in predicting difficulty classes of rock climbing routes on the MoonBoard training apparatus. We build a hetergenous graph of problem / hold nodes and benchmark a PyTorch implementation of the GCN against classic statistical learning algorithms along with fully-connected feed-forward networks. Our best model achieves a 0.74 average AUC across all difficulty classes, validates GCNs' relative immunity against class imbalance, and demonstrates a surprising insight into the optimal number of graph convolutions. 
 \end{abstract}
 
 % Introduction Section
 \section{Introduction}	
-Given rock climbing's recent increase in popularity, we created a neural network for classifying climbing routes (a.k.a. problems) into suitable difficulty categories. This tool could either speed up or replace traditionally heuristic-based approachs to ranking climbing problems, thereby lowering the barrier of entry for anyone seeking to create their own routes. We solved this problem using a classifier built for the "Moonboard" apparatus --- a modular climbing wall of fixed dimensions and pre-set hold configurations (Figure 1) and took inspiration from the NLP domain where Graph Convolutional Network architectures have demonstrated great success in document classification tasks. Given a MoonBoard climbing route, we are able to categorize it to a specific difficulty level.
+Given rock climbing's recent increase in popularity, we created a neural network for classifying climbing routes (a.k.a. problems) into suitable difficulty categories. This tool could either speed up or replace traditionally heuristic-based approachs to ranking climbing problems, thereby lowering the barrier of entry for anyone seeking to create their own routes or validate the grading accuracy of pre-existing ones. We solved this problem using a classifier built for the "Moonboard" apparatus --- a modular climbing wall of fixed dimensions and pre-set hold configurations (Figure 1) and took inspiration from the NLP domain where Graph Convolutional Network architectures have demonstrated great success in document classification tasks. Given a MoonBoard climbing route, we are able to assign it an appropriate difficulty level.
 
 {\small\textbf{Our codebase can be found here: \texttt{https://github.com/gestalt-howard/moonGen}}}
 
@@ -66,15 +66,13 @@ Using a graph neural network \cite{battaglia2018relational}, it is possible to e
 \section{Dataset and Features}
 On their website (\texttt{https://moonboard.com}), Moonboard hosts a database of Moonboard climbing routes, created and ranked by a global climbing community. For a given hold configuration (i.e. Moonboard 2016), routes are denoted using multi-colored circles superimposed on a stock Moonboard image. These circles specify a hold set and define a problem: green, blue, and red circles indicate starting, intermeidate, and end positions, respectively (Figure 1). MoonBoard 2016 has exactly 140 holds.
 
-Assembling this dataset required a custom Selenium scraping script that clicked through thousands of pages of Moonboard problems, stopping on each page to extract metadata tags, labels, and features. The data is separated into 15 distinct difficulty categories denoted as V4 through V14 with ascending numerical values corresponding to increasing route difficulty. Mirroring the real-world distribution of climbers (most aren't expert-level), our dataset is highly imbalanced with V4 and V5 routes accounting for over 50\% of 13,589 problems while V11 through V14 contribute approximately 1\%. To counteract this extreme data imbalance, we implemented a balanced sampling protocol that upsamples sparse classes and ensures that each difficulty category is equally-represented during model training. For our experiments, we sampled / upsampled 2,000 problems from each difficulty category and created an 80-20 train-test split for a test set size of 4,400 samples. The train set was further divided in an 80-20 train-dev split for a final dev set size of 3,520 and a final train set size of 14,080.
+Assembling this dataset required a custom Selenium scraping script that clicked through thousands of pages of Moonboard problems, stopping on each page to extract metadata tags, labels, and features. The data is separated into 11 distinct difficulty categories denoted as V4 through V14 with ascending numerical values corresponding to increasing route difficulty. Mirroring the real-world distribution of climbers (most aren't expert-level), our dataset is highly imbalanced with V4 and V5 routes accounting for over 50\% of 13,589 problems while V11 through V14 contribute approximately 1\%. To counteract this extreme data imbalance, we implemented a balanced sampling protocol that upsamples sparse classes and ensures that each difficulty category is equally-represented during model training. For our experiments, we sampled / upsampled 2,000 problems from each difficulty category and created an 80-20 train-test split for a test set size of 4,400 samples. The train set was further divided in an 80-20 train-dev split for a final dev set size of 3,520 and a final train set size of 14,080.
 
 MoonBoard problem data were further preprocessed into either one-hot or multi-hot representations. In its multi-hot form, each route is represented as a 140-dimensional vector with each dimension encoding presence / absence of one of the 140 holds. A PCA-decomposed 2D visualization of the problem corpus is shown in Figure 1.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=.255\textwidth]{moonboard_stock}\hfill
-\includegraphics[width=.255\textwidth]{moonboard_1}\hfill
-\includegraphics[width=.43\textwidth]{pca_visual}
+\includegraphics[width=.9\textwidth]{moondata}
 
 \label{fig: MoonBoard data description}
 \caption{(left) MoonBoard stock configuration (version 2016), (center) A specific MoonBoard route on the 2016 configuration, (right) Visualization of PCA decomposition of MoonBoard problems}
@@ -88,7 +86,7 @@ The Graph Convolutional Network as presented by \cite{kipf2016semisupervised} pr
 \begin{equation}
 L^{(1)} = \rho(\widetilde{A}XW_{0})
 \end{equation}
-where $\widetilde{A} = D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$ is the normalized symmetric adjacency matrix, $W_0 \in \mathbb{R}^{m \times k}$ is a weight matrix, and $\rho$ is an activation function. Note that $X$ can also be denoted as $L^{(0)}$. This one-step convolutional operation captures information about a node's immediate neighbors (Figure 2, first "Hidden Layer" from left). By stacking multiple GCN layers, graph nodes can be embedded with features from neighbors successively further away,
+where $\widetilde{A} = D^{-\frac{1}{2}}AD^{-\frac{1}{2}}$ is the normalized symmetric adjacency matrix, $W_0 \in \mathbb{R}^{m \times k}$ is a weight matrix, and $\rho$ is an activation function. Note that $X$ can also be denoted as $L^{(0)}$. This one-step convolutional operation captures information about a node's immediate neighbors (Figure 2). By stacking multiple GCN layers, graph nodes can be embedded with features from neighbors successively further away,
 \begin{equation}
 L^{(j+1)} = \rho(\widetilde{A}L^{(j)}W_{j})
 \end{equation}
@@ -96,15 +94,15 @@ where $j$ denotes the layer number.
 
 \begin{figure}
 \centering
-\includegraphics[width=.5\linewidth]{gcn_2steps}
+\includegraphics[width=.4\linewidth]{gcn_2steps}
 \caption{At the first convolutional step, any node has access to its 1-hop neighbors. At the second convolution, nodes can "see" features from their 2-hop neighbors. Generally, $j$ convolution steps yields access to features from $j$-hop neighbors.}
 \label{fig: Graph Convolutional Network}
 \end{figure}
 
 \begin{figure}
 \centering
-\includegraphics[width=.6\linewidth]{textGCN}
-\caption{A heterogenous corpus graph for document classification using a Text GCN \cite{yao2018graph}. Nodes come in 2 types: document entities and word entities. The different colors correspond to different node categories (notice only document nodes are colored). A direct analogy to Moonboard problems can be made by substituting documents for problems and holds for words.}
+\includegraphics[width=.5\linewidth]{textGCN}
+\caption{A heterogenous corpus graph for document classification using a Text GCN \cite{yao2018graph}. Nodes come in 2 types: document entities and word entities. The different colors correspond to different node categories (notice only document nodes are colored).}
 \label{fig: Corpus graph for Text Graph Convolutional Network}
 \end{figure}
 
@@ -138,7 +136,7 @@ where $\mathcal{Y}_P$ is the set of MoonBoard problem indices that have labels a
 
 % Discussion section
 \section{Experiments, Results, and Discussions}
-We ran a total of 17 experiments (see Table 1) that can be categorized into three broad categories: Baselines, Dense, and GCN. The Baselines category features a battery of classic statistical learning models including logistic regression, support vector machine, random forest, gradient boosting, and multi-layer perceptron (all scikit-learn implementations). The Dense experiment category refers to a PyTorch implementation of fully-connected feed-forward networks and has two variations: Shallow and Deep, referencing the number of hidden layers in each network. The GCN family of experiments features several varieties and are prefixed by "GCN" under Table 1. Each successive tag describes (1) \texttt{(S) / (L)} the capacity of hidden layers as small or large (2) \texttt{2S / 4S} the number of convolution steps (3) 
+We ran a total of 17 experiments (see Table 1) that can be categorized into three broad categories: Baselines, Dense, and GCN. The Baselines category features a battery of classic statistical learning models. The Dense experiment category refers to a PyTorch implementation of fully-connected feed-forward networks and has two variations: Shallow and Deep, referencing the number of hidden layers in each network. The GCN family of experiments features several varieties and are prefixed by "GCN" under Table 1. Each successive tag describes (1) \texttt{(S)/(L)} the capacity of hidden layers as small or large, (2) \texttt{2S/4S} the number of convolution steps, (3) \texttt{OH/MH} one-hot or multi-hot features, and (4) \texttt{PMI/Binary/Self-Binary/Self-PMI/Win-PMI} adjacency tags. Tag \texttt{PMI} refers to Equation 3 (Approach 1), \texttt{Binary} refers to a version of Equation 3 where all non-zero values are set to 1, the \texttt{Self-} prefix denotes a version of adjacency where the diagonals of $A$ are re-set to identity after normalization to $\widetilde{A}$, and the prefix \texttt{Win-} identifies Equation 3 (Approach 2). 
 
 % Table of results
 \begin{table}[h!]
@@ -169,19 +167,25 @@ GCN (L) 2S, MH, Win-PMI     & 0.57  & 0.38  & 0.34  & ... & 0.47 & 0.00 & 0.00 &
 \end{tabular}
 \end{table}
 
-\begin{figure}
+Referencing Table 1, the first observation is that GCN models using multi-hot features outperform baseline models and PyTorch Dense implementations across the board on averaged AUC. This result lends credibility to the effectiveness of utilizing nearby neighbors' features in classification tasks. Additionally, we observe that the only GCN model featuring four convolutional steps yielded the best averaged F1 and AUC scores --- a surprising finding since the authors of \cite{yao2018graph} reported negligible performance gains after two GCN layers. This result suggests that there are meaningful relationships not only between MoonBoard problems sharing the same holds (1 degree of separation), but also in relationships 1 degree further. Intuitively, this might be interpreted as, "if a node's neighbors are mostly V5 \textbf{and} my neighbor's neighbors are also V5, this node is likely a V5."
+
+\begin{figure}[h]
 \centering
-\includegraphics[width=.8\linewidth]{confusion_window}
-\caption{Two confusion matrices that present a novel approach to model evaluation of a multi-category classifier. The left-hand plot shows a vanilla confusion matrix implementation (Window Size 0) while the right-hand matrix incorporates a sliding-window approach (Window Size 1) to determining false positive / true positive rates amongst the different difficulty classes.}
+\includegraphics[width=.65\textwidth]{confusions}
+
+\label{fig: Confusion matrices}
+\caption{Confusion matrices on test data (left) GCN experiment multi-hot, 4 steps, regular PMI, (right) Logistic Regression. We can see that while logistic regression performs better near the lower-difficulty region, GCN is able to capture difficult problems more accurately.}
 \end{figure}
+
+Finally, referencing the two confusion matrices in Figure 4, we observe that it is really in the higher-difficulty classes where the 4-step GCN outperforms logistic regression. This behavior is well-aligned with our hypothesis that explicit graph connections better-enable label information to propagate to relevant neighbors. In this way, GCNs are far less susceptible to class imbalance than the classic machine learning algorithms or even fully-connected feed-forward networks.
 
 % Conclusion Section
 \section{Conclusions / Future Work}
-Given more time, we would've liked to explore a generative application \cite{mirza2014conditional} capable of producing a new Moonboard problem, given a user-specified difficulty.
+In this work, we presented a novel application of graph convolutional networks to the rock climbing domain by adapting the Text GCN framework used in document classification. We found that GCNs, in conjunction with multi-hot problem feature embeddings, provide a signficicant improvement over classic statistical learning algorithms (i.e. logistic regression, random forest, etc...). Moreover, we also discovered that a 4-step graph convolutional operation yielded the best across-the-board results --- a finding that deviated from conclusions made by authors of TextGCN \cite{yao2018graph}. Finally, we validated that GCNs are indeed less susceptible to data imbalance, as compared with standard machine learning / deep learning algorithms. Given more time, we would've liked to explore a generative application \cite{mirza2014conditional} capable of producing a new Moonboard problem, given a user-specified difficulty.
 
 % Contributions Section
 \section{Contributions}
-Cheng-Hao implemented the baseline statistical learning experiments, established evaluation metrics used to assess all models' performances, and maintained the project Github repository. Aaron established an early GCN baseline along with the balanced sampling protocol. Aaron and Cheng-Hao co-authored the PyTorch implementations of the Dense and GCN frameworks and co-planned the series of experiments to run. Aaron batch-ran all 17 experiments which Cheng-Hao collected and summarized in Section 5. Cheng-Hao was the sole contributor to the drafting of this report. Rafael offered insights into alternative loss functions amenable to data imbalance on a graph network.
+Cheng-Hao implemented the baseline statistical learning experiments, established evaluation metrics used to assess all models' performances, and maintained the project Github repository. Aaron wrote the custom Selenium scrapping script, established an early GCN baseline, and created the balanced sampling protocol. Aaron and Cheng-Hao co-authored the PyTorch implementations of the Dense and GCN frameworks and co-planned the series of experiments to run. Aaron batch-ran all 17 experiments which Cheng-Hao collected and summarized in Section 5. Cheng-Hao was the sole contributor to the drafting of this report. Rafael offered insights into alternative loss functions amenable to data imbalance on a graph network.
 
 % References
 \bibliographystyle{plain}
